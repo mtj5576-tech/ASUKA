@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">ASUKA primary app icon</title>
+  <desc id="desc">A warm coral rounded-square app icon with a dark winged A mark and terminal prompt.</desc>
+  <defs>
+    <linearGradient id="coralTile" x1="128" y1="80" x2="884" y2="944" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FF9D3F"/>
+      <stop offset="0.46" stop-color="#FF6538"/>
+      <stop offset="1" stop-color="#E92E47"/>
+    </linearGradient>
+    <linearGradient id="edgeLight" x1="512" y1="32" x2="512" y2="992" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.26"/>
+      <stop offset="0.34" stop-color="#FFFFFF" stop-opacity="0.04"/>
+      <stop offset="1" stop-color="#75151D" stop-opacity="0.13"/>
+    </linearGradient>
+  </defs>
+  <rect x="32" y="32" width="960" height="960" rx="224" fill="url(#coralTile)"/>
+  <rect x="32" y="32" width="960" height="960" rx="224" fill="url(#edgeLight)"/>
+  <rect x="54" y="54" width="916" height="916" rx="202" fill="none" stroke="#FFFFFF" stroke-opacity="0.14" stroke-width="5"/>
+  <g>
+    <path fill="#171318" d="M512 224h67L334 836h-82L512 224Z"/>
+    <path fill="#171318" d="M512 224h-67l245 612h82L512 224Z"/>
+    <path fill="#171318" d="M354 650h316v104H354z"/>
+    <path fill="none" stroke="#171318" stroke-width="36" stroke-linecap="round" stroke-linejoin="round" d="M486 500l56 58-56 58"/>
+    <path fill="#FFF2D8" d="M512 122l38 54-38 54-38-54 38-54Z"/>
+  </g>
+</svg>

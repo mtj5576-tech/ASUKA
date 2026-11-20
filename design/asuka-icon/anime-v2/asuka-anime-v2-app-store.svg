@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">ASUKA anime agent app store master</title>
+  <desc id="desc">A full-bleed square master for store submission.</desc>
+  <defs>
+    <linearGradient id="tile" x1="124" y1="76" x2="900" y2="950" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FF4F87"/>
+      <stop offset="0.52" stop-color="#FF6C72"/>
+      <stop offset="1" stop-color="#FF9A3D"/>
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="1024" fill="url(#tile)"/>
+  <image href="asuka-anime-v2.svg" width="1024" height="1024"/>
+</svg>

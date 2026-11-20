@@ -1,0 +1,74 @@
+{
+  "name": "asuka-personal",
+  "private": true,
+  "version": "0.8.38",
+  "description": "Local-first personal agent command desk with Native, Codex, Claude, DSH and optional OpenMausBot adapters.",
+  "author": "ASUKA",
+  "type": "module",
+  "main": "electron/main.mjs",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build",
+    "desktop": "npm run build && electron .",
+    "desktop:dir": "npm run build && electron-builder --dir",
+    "desktop:dist": "npm run build && electron-builder --win portable",
+    "test": "node --test tests/*.test.mjs",
+    "preview": "vite preview --host 127.0.0.1",
+    "start": "node server.mjs"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "electron": "^45.4.1",
+    "electron-builder": "^26.18.0",
+    "lucide-react": "^0.539.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "vite": "^7.1.0"
+  },
+  "build": {
+    "appId": "com.asuka.personal",
+    "productName": "ASUKA",
+    "asar": true,
+    "asarUnpack": [
+      "vendor/archify/**/*",
+      "skills/**/*"
+    ],
+    "npmRebuild": false,
+    "directories": {
+      "output": "release",
+      "buildResources": "build"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "server.mjs",
+      "server/language.mjs",
+      "server/settings-store.mjs",
+      "server/adapters/**/*",
+      "server/core/**/*",
+      "server/fabric/**/*",
+      "server/native/**/*",
+      "server/tools/**/*",
+      "skills/**/*",
+      "vendor/archify/**/*",
+      "shared/decision/**/*",
+      "package.json",
+      "build/icon.png"
+    ],
+    "win": {
+      "icon": "build/icon.png",
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "artifactName": "ASUKA-${version}-portable.${ext}"
+    }
+  },
+  "dependencies": {
+    "zod": "^4.6.7"
+  }
+}

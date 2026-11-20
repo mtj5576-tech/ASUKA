@@ -1,0 +1,4 @@
+interface:
+  display_name: "Conversation Memory"
+  short_description: "Persistent long-term memory across sessions"
+  default_prompt: "Remember our conversation."

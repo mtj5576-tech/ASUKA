@@ -221,3 +221,33 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+.env
+.env.*
+*.pem
+*.key
+.native-provider.key
+**/memory.json
+
+# ASUKA local runtime and generated artifacts
+node_modules/
+dist/
+release/
+.vite/
+.runtime-temp/
+.test-*/
+.visual-qa/
+outputs/
+data/
+.archive/
+.tmp-packaging/
+*.log
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+asuka-*.png
+
+# Keep only the desktop packaging resources required by package.json
+!build/
+build/*
+!build/icon.png
+!build/icon.ico

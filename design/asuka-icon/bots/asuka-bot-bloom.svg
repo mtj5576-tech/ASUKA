@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">ASUKA-05 / BLOOM bot avatar</title>
+  <desc id="desc">An ASUKA original anime-inspired Design agent avatar in a flower badge.</desc>
+  <defs>
+    <linearGradient id="hair" x1="340" y1="236" x2="710" y2="812" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FF85D9"/>
+      <stop offset="0.48" stop-color="#D72AA7"/>
+      <stop offset="1" stop-color="#981174"/>
+    </linearGradient>
+    <linearGradient id="iris" x1="380" y1="492" x2="446" y2="594" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFE45C"/>
+      <stop offset="1" stop-color="#FF6FB1"/>
+    </linearGradient>
+    <clipPath id="badgeClip"><path d="M512.0 34.0 L727.0 139.6 L926.0 273.0 L942.0 512.0 L926.0 751.0 L727.0 884.4 L512.0 990.0 L297.0 884.4 L98.0 751.0 L82.0 512.0 L98.0 273.0 L297.0 139.6 Z"/></clipPath>
+  </defs>
+  <g clip-path="url(#badgeClip)">
+    <rect width="1024" height="1024" fill="#F13BC2"/>
+    <path d="M42 390 314 84h120L172 390Z" fill="#FFE45C" opacity="0.94"/>
+    <path d="M732 34h292v118L604 526Z" fill="#6BFFF1" opacity="0.72"/>
+    <circle cx="512" cy="512" r="338" fill="#FFF3E5" opacity="0.96"/>
+
+    <path d="M704 398C828 326 938 394 918 514 902 606 814 644 766 606 832 548 804 480 704 470Z" fill="#D72AA7" stroke="#241C3A" stroke-width="12" stroke-linejoin="round"/>
+    <path d="M200 992c28-166 134-240 312-240s284 74 312 240Z" fill="#241C3A"/>
+    <path d="M350 868c44 68 100 102 162 102s118-34 162-102l76 124H274Z" fill="#FFE45C"/>
+    <path d="M458 666h108v126H458Z" fill="#EEA28F"/>
+    <path d="M466 768c12 26 28 38 46 38s34-12 46-38v44H466Z" fill="#D87E78" opacity="0.55"/>
+
+    <path d="M252 558c-18-194 76-344 260-344s278 150 260 344c-10 76-32 132-66 176l42 166c-34 32-84 26-120-10l-54-58H450l-54 58c-36 36-86 42-120 10l42-166c-34-44-56-100-66-176Z" fill="url(#hair)" stroke="#241C3A" stroke-width="14" stroke-linejoin="round"/>
+    <path d="M286 540c-8-120 48-210 128-256-20 74-16 142 8 196-46 24-92 46-136 60Zm452 0c8-120-48-210-128-256 20 74 16 142-8 196 46 24 92 46 136 60Z" fill="#981174" opacity="0.7"/>
+    <path d="M338 394c8-82 78-122 174-122s166 40 174 122c10 80-6 178-56 248-32 46-72 82-118 82s-86-36-118-82c-50-70-66-168-56-248Z" fill="#FFD9C9" stroke="#241C3A" stroke-width="14" stroke-linejoin="round"/>
+    <path d="M298 422c18-120 94-180 214-180s196 60 214 180l-38 60c-14-82-46-132-94-162-14 60-46 104-88 124-12-68-44-116-82-146-16 76-48 132-94 176-8-24-20-42-32-52Z" fill="#D72AA7" stroke="#241C3A" stroke-width="12" stroke-linejoin="round"/>
+    <path d="M338 302c42-52 98-76 166-76" fill="none" stroke="#FF85D9" stroke-width="22" stroke-linecap="round"/>
+    <path d="M612 284c50 26 82 66 94 120" fill="none" stroke="#6BFFF1" stroke-width="20" stroke-linecap="round"/>
+
+    <path d="M292 520c0-204 440-204 440 0" fill="none" stroke="#241C3A" stroke-width="44" stroke-linecap="round"/>
+    <path d="M316 518c0-170 392-170 392 0" fill="none" stroke="#FFE45C" stroke-width="10" stroke-linecap="round"/>
+    <rect x="226" y="486" width="104" height="166" rx="44" fill="#241C3A"/>
+    <rect x="248" y="512" width="60" height="114" rx="30" fill="#FFE45C"/>
+    <path d="M278 538 286 558 308 560 292 576 296 598 278 586 260 598 264 576 248 560 270 558Z" fill="#241C3A"/>
+    <rect x="694" y="486" width="104" height="166" rx="44" fill="#241C3A"/>
+    <rect x="716" y="512" width="60" height="114" rx="30" fill="#6BFFF1"/>
+    <circle cx="746" cy="568" r="12" fill="#241C3A" opacity="0.75"/>
+
+    <path d="M344 528c14-64 62-94 114-64 30 18 40 62 30 108-12 52-50 82-94 66-44-16-62-62-50-110Z" fill="#FFF8EF" stroke="#241C3A" stroke-width="14"/>
+    <ellipse cx="414" cy="548" rx="38" ry="58" fill="url(#iris)"/>
+    <ellipse cx="414" cy="560" rx="18" ry="34" fill="#17213D"/>
+    <circle cx="402" cy="520" r="14" fill="#FFFFFF"/>
+    <circle cx="430" cy="570" r="7" fill="#FFE45C"/>
+    <path d="M352 430c38-26 80-22 112 8" fill="none" stroke="#241C3A" stroke-width="14" stroke-linecap="round"/>
+    <path d="M566 536c34-34 78-32 116-2" fill="none" stroke="#241C3A" stroke-width="22" stroke-linecap="round"/><path d="M590 518c26-24 58-22 86 0" fill="none" stroke="#FF85D9" stroke-width="9" stroke-linecap="round"/><path d="M562 430c38-26 80-22 112 8" fill="none" stroke="#241C3A" stroke-width="14" stroke-linecap="round"/>
+    
+    <path d="M500 588q12 8 24 0" fill="none" stroke="#B8676B" stroke-width="8" stroke-linecap="round"/>
+    <path d="M452 636c20 54 100 54 120 0-34 20-86 20-120 0Z" fill="#7E173F" stroke="#241C3A" stroke-width="8" stroke-linejoin="round"/><path d="M502 664c14 34 38 34 50 0-14 12-38 12-50 0Z" fill="#FF7599"/>
+    <ellipse cx="336" cy="598" rx="44" ry="23" fill="#FFE45C" opacity="0.34"/>
+    <ellipse cx="688" cy="598" rx="44" ry="23" fill="#FFE45C" opacity="0.34"/>
+
+    <path d="M710 306 738 346 710 386 682 346Z" fill="#6BFFF1" stroke="#241C3A" stroke-width="9" stroke-linejoin="round"/>
+    <path d="M824 204 834 228 858 232 840 248 844 272 824 258 804 272 808 248 790 232 814 228Z" fill="#FFE45C" stroke="#241C3A" stroke-width="5"/>
+    <path d="M174 624 188 648 174 672 160 648Z" fill="#FFF3E5" opacity="0.9"/>
+  </g>
+  <g fill="none" stroke="#241C3A" stroke-width="16" stroke-linejoin="round"><path d="M512.0 34.0 L727.0 139.6 L926.0 273.0 L942.0 512.0 L926.0 751.0 L727.0 884.4 L512.0 990.0 L297.0 884.4 L98.0 751.0 L82.0 512.0 L98.0 273.0 L297.0 139.6 Z"/></g>
+</svg>

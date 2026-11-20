@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">ASUKA dark app icon</title>
+  <desc id="desc">A dark rounded-square app icon with a coral winged A mark and terminal prompt.</desc>
+  <defs>
+    <linearGradient id="inkTile" x1="196" y1="88" x2="836" y2="940" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#262127"/>
+      <stop offset="0.54" stop-color="#151317"/>
+      <stop offset="1" stop-color="#08080A"/>
+    </linearGradient>
+    <linearGradient id="edgeLight" x1="512" y1="32" x2="512" y2="992" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.14"/>
+      <stop offset="0.38" stop-color="#FFFFFF" stop-opacity="0.02"/>
+      <stop offset="1" stop-color="#000000" stop-opacity="0.16"/>
+    </linearGradient>
+  </defs>
+  <rect x="32" y="32" width="960" height="960" rx="224" fill="url(#inkTile)"/>
+  <rect x="32" y="32" width="960" height="960" rx="224" fill="url(#edgeLight)"/>
+  <rect x="54" y="54" width="916" height="916" rx="202" fill="none" stroke="#FFFFFF" stroke-opacity="0.11" stroke-width="5"/>
+  <g>
+    <path fill="#FF6B3D" d="M512 224h67L334 836h-82L512 224Z"/>
+    <path fill="#FF6B3D" d="M512 224h-67l245 612h82L512 224Z"/>
+    <path fill="#FF6B3D" d="M354 650h316v104H354z"/>
+    <path fill="none" stroke="#FFF2D8" stroke-width="36" stroke-linecap="round" stroke-linejoin="round" d="M486 500l56 58-56 58"/>
+    <path fill="#FFD05A" d="M512 122l38 54-38 54-38-54 38-54Z"/>
+  </g>
+</svg>

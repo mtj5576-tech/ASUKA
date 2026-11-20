@@ -1,0 +1,92 @@
+[
+  {
+    "key": "nova",
+    "name": "ASUKA-01 / NOVA",
+    "role": "Core agent",
+    "shape": "squircle",
+    "primary": "#FF4F87",
+    "accent": "#35DDD0",
+    "accent2": "#FFE45C",
+    "svg": "asuka-bot-nova.svg"
+  },
+  {
+    "key": "byte",
+    "name": "ASUKA-02 / BYTE",
+    "role": "Code agent",
+    "shape": "hexagon",
+    "primary": "#3978F6",
+    "accent": "#6BF3FF",
+    "accent2": "#A8FF5C",
+    "svg": "asuka-bot-byte.svg"
+  },
+  {
+    "key": "lens",
+    "name": "ASUKA-03 / LENS",
+    "role": "Research agent",
+    "shape": "circle",
+    "primary": "#8A5CFF",
+    "accent": "#D9FF4D",
+    "accent2": "#FF7ACC",
+    "svg": "asuka-bot-lens.svg"
+  },
+  {
+    "key": "grid",
+    "name": "ASUKA-04 / GRID",
+    "role": "Data agent",
+    "shape": "pill",
+    "primary": "#0D8E9F",
+    "accent": "#6BE6FF",
+    "accent2": "#FFD15A",
+    "svg": "asuka-bot-grid.svg"
+  },
+  {
+    "key": "bloom",
+    "name": "ASUKA-05 / BLOOM",
+    "role": "Design agent",
+    "shape": "flower",
+    "primary": "#F13BC2",
+    "accent": "#FFE45C",
+    "accent2": "#6BFFF1",
+    "svg": "asuka-bot-bloom.svg"
+  },
+  {
+    "key": "relay",
+    "name": "ASUKA-06 / RELAY",
+    "role": "Ops agent",
+    "shape": "shield",
+    "primary": "#11B981",
+    "accent": "#FF9E3D",
+    "accent2": "#C3FF7A",
+    "svg": "asuka-bot-relay.svg"
+  },
+  {
+    "key": "guard",
+    "name": "ASUKA-07 / GUARD",
+    "role": "Security agent",
+    "shape": "octagon",
+    "primary": "#E33F57",
+    "accent": "#FFF1DA",
+    "accent2": "#FFB03A",
+    "svg": "asuka-bot-guard.svg"
+  },
+  {
+    "key": "sprout",
+    "name": "ASUKA-08 / SPROUT",
+    "role": "Growth agent",
+    "shape": "droplet",
+    "primary": "#8BCF25",
+    "accent": "#FF7A32",
+    "accent2": "#F7FF8A",
+    "svg": "asuka-bot-sprout.svg"
+  },
+  {
+    "key": "luna",
+    "name": "ASUKA-09 / LUNA",
+    "role": "Night agent",
+    "shape": "cloud",
+    "primary": "#4B4ACF",
+    "accent": "#FF6BCB",
+    "accent2": "#7DEBFF",
+    "svg": "asuka-bot-luna.svg"
+  }
+]

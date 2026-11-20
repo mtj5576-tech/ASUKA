@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ASUKA bot system</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; width: 1600px; height: 1200px; overflow: hidden; }
+    body {
+      padding: 64px 76px 58px;
+      background: #f8f1e9;
+      color: #241c3a;
+      font-family: "Segoe UI", Arial, sans-serif;
+      letter-spacing: 0;
+    }
+    .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 80px;
+      padding-bottom: 32px;
+      border-bottom: 2px solid #241c3a;
+    }
+    .eyebrow {
+      margin: 0 0 14px;
+      color: #d32261;
+      font-size: 16px;
+      line-height: 1;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    h1 {
+      margin: 0;
+      font-size: 64px;
+      line-height: .95;
+      font-weight: 900;
+      letter-spacing: -1px;
+    }
+    .intro {
+      max-width: 560px;
+      margin: 0 0 4px;
+      color: #5f5262;
+      font-size: 20px;
+      line-height: 1.42;
+      text-align: right;
+    }
+    .grid {
+      margin-top: 34px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      column-gap: 34px;
+      row-gap: 28px;
+    }
+    .bot {
+      min-width: 0;
+      height: 236px;
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      align-items: center;
+      gap: 22px;
+      border-bottom: 1px solid #d9c8c2;
+    }
+    .bot img {
+      display: block;
+      width: 210px;
+      height: 210px;
+    }
+    .meta { min-width: 0; }
+    .num {
+      margin-bottom: 10px;
+      color: #a08d96;
+      font-size: 14px;
+      font-weight: 800;
+    }
+    h2 {
+      margin: 0;
+      font-size: 25px;
+      line-height: 1.02;
+      font-weight: 900;
+    }
+    .role {
+      margin: 7px 0 0;
+      color: #675865;
+      font-size: 15px;
+      line-height: 1.25;
+    }
+    .shape {
+      margin: 18px 0 0;
+      color: #837481;
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .dots { display: flex; gap: 7px; margin-top: 12px; }
+    .dot { width: 16px; height: 16px; border-radius: 50%; border: 1px solid rgba(36,28,58,.12); }
+    .foot {
+      margin-top: 31px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #675865;
+      font-size: 15px;
+    }
+    .tag {
+      color: #d32261;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <div>
+      <p class="eyebrow">ASUKA / persistent bot crew</p>
+      <h1>One crew.<br>Nine signals.</h1>
+    </div>
+    <p class="intro">Each bot keeps the ASUKA anime face and headset DNA, then adds a unique badge shape, saturated color and role glyph. The result stays recognizable in a long sidebar and at small avatar sizes.</p>
+  </header>
+  <main class="grid">
+    <article class="bot"><img src="asuka-bot-nova-512.png" alt="Nova bot avatar"><div class="meta"><div class="num">01 / SQUIRCLE</div><h2>NOVA</h2><p class="role">Core orchestrator</p><p class="shape">Warm signal / prompt</p><div class="dots"><span class="dot" style="background:#ff4f87"></span><span class="dot" style="background:#35ddd0"></span><span class="dot" style="background:#ffe45c"></span></div></div></article>
+    <article class="bot"><img src="asuka-bot-byte-512.png" alt="Byte bot avatar"><div class="meta"><div class="num">02 / HEXAGON</div><h2>BYTE</h2><p class="role">Code specialist</p><p class="shape">Electric blue / terminal</p><div class="dots"><span class="dot" style="background:#3978f6"></span><span class="dot" style="background:#6bf3ff"></span><span class="dot" style="background:#a8ff5c"></span></div></div></article>
+    <article class="bot"><img src="asuka-bot-lens-512.png" alt="Lens bot avatar"><div class="meta"><div class="num">03 / CIRCLE</div><h2>LENS</h2><p class="role">Research specialist</p><p class="shape">Violet / focus</p><div class="dots"><span class="dot" style="background:#8a5cff"></span><span class="dot" style="background:#d9ff4d"></span><span class="dot" style="background:#ff7acc"></span></div></div></article>
+    <article class="bot"><img src="asuka-bot-grid-512.png" alt="Grid bot avatar"><div class="meta"><div class="num">04 / PILL</div><h2>GRID</h2><p class="role">Data specialist</p><p class="shape">Teal / metrics</p><div class="dots"><span class="dot" style="background:#0d8e9f"></span><span class="dot" style="background:#6be6ff"></span><span class="dot" style="background:#ffd15a"></span></div></div></article>
+    <article class="bot"><img src="asuka-bot-bloom-512.png" alt="Bloom bot avatar"><div class="meta"><div class="num">05 / FLOWER</div><h2>BLOOM</h2><p class="role">Design specialist</p><p class="shape">Magenta / spark</p><div class="dots"><span class="dot" style="background:#f13bc2"></span><span class="dot" style="background:#ffe45c"></span><span class="dot" style="background:#6bfff1"></span></div></div></article>
+    <article class="bot"><img src="asuka-bot-relay-512.png" alt="Relay bot avatar"><div class="meta"><div class="num">06 / SHIELD</div><h2>RELAY</h2><p class="role">Ops specialist</p><p class="shape">Emerald / motion</p><div class="dots"><span class="dot" style="background:#11b981"></span><span class="dot" style="background:#ff9e3d"></span><span class="dot" style="background:#c3ff7a"></span></div></div></article>
+    <article class="bot"><img src="asuka-bot-guard-512.png" alt="Guard bot avatar"><div class="meta"><div class="num">07 / OCTAGON</div><h2>GUARD</h2><p class="role">Security specialist</p><p class="shape">Crimson / lock</p><div class="dots"><span class="dot" style="background:#e33f57"></span><span class="dot" style="background:#fff1da"></span><span class="dot" style="background:#ffb03a"></span></div></div></article>
+    <article class="bot"><img src="asuka-bot-sprout-512.png" alt="Sprout bot avatar"><div class="meta"><div class="num">08 / DROPLET</div><h2>SPROUT</h2><p class="role">Growth specialist</p><p class="shape">Lime / lift</p><div class="dots"><span class="dot" style="background:#8bcf25"></span><span class="dot" style="background:#ff7a32"></span><span class="dot" style="background:#f7ff8a"></span></div></div></article>
+    <article class="bot"><img src="asuka-bot-luna-512.png" alt="Luna bot avatar"><div class="meta"><div class="num">09 / CLOUD</div><h2>LUNA</h2><p class="role">Night specialist</p><p class="shape">Indigo / calm</p><div class="dots"><span class="dot" style="background:#4b4acf"></span><span class="dot" style="background:#ff6bcb"></span><span class="dot" style="background:#7debff"></span></div></div></article>
+  </main>
+  <footer class="foot"><span>Same ASUKA face. Different shape, color and job.</span><span class="tag">9 bots / one identity</span></footer>
+</body>
+</html>

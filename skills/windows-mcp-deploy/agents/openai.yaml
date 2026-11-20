@@ -1,0 +1,7 @@
+interface:
+  display_name: "Windows-MCP Deploy"
+  short_description: "Deploy, verify, and safely invoke Windows desktop MCP"
+  default_prompt: "Use $windows-mcp-deploy to install or verify Windows-MCP and review its safe invocation rules."
+
+policy:
+  allow_implicit_invocation: true

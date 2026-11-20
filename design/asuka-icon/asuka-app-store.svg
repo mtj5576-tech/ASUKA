@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">ASUKA app store master</title>
+  <desc id="desc">A full-bleed square app icon master for store submission and operating-system masking.</desc>
+  <defs>
+    <linearGradient id="coralTile" x1="116" y1="48" x2="908" y2="976" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FF9D3F"/>
+      <stop offset="0.46" stop-color="#FF6538"/>
+      <stop offset="1" stop-color="#E92E47"/>
+    </linearGradient>
+    <linearGradient id="edgeLight" x1="512" y1="0" x2="512" y2="1024" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.20"/>
+      <stop offset="0.34" stop-color="#FFFFFF" stop-opacity="0.03"/>
+      <stop offset="1" stop-color="#75151D" stop-opacity="0.13"/>
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="1024" fill="url(#coralTile)"/>
+  <rect width="1024" height="1024" fill="url(#edgeLight)"/>
+  <g>
+    <path fill="#171318" d="M512 224h67L334 836h-82L512 224Z"/>
+    <path fill="#171318" d="M512 224h-67l245 612h82L512 224Z"/>
+    <path fill="#171318" d="M354 650h316v104H354z"/>
+    <path fill="none" stroke="#171318" stroke-width="36" stroke-linecap="round" stroke-linejoin="round" d="M486 500l56 58-56 58"/>
+    <path fill="#FFF2D8" d="M512 122l38 54-38 54-38-54 38-54Z"/>
+  </g>
+</svg>

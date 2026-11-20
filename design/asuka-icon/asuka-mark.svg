@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">ASUKA transparent mark</title>
+  <desc id="desc">The ASUKA winged A symbol without a tile background.</desc>
+  <g transform="translate(0 -22)">
+    <path fill="#171318" d="M512 224h67L334 836h-82L512 224Z"/>
+    <path fill="#171318" d="M512 224h-67l245 612h82L512 224Z"/>
+    <path fill="#171318" d="M354 650h316v104H354z"/>
+    <path fill="none" stroke="#FF5A3C" stroke-width="36" stroke-linecap="round" stroke-linejoin="round" d="M486 500l56 58-56 58"/>
+    <path fill="#FF5A3C" d="M512 122l38 54-38 54-38-54 38-54Z"/>
+  </g>
+</svg>

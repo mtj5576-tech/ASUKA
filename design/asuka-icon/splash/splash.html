@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ASUKA boot screen</title>
+  <link rel="icon" type="image/png" href="../anime-v2/asuka-anime-v2-32.png">
+  <link rel="stylesheet" href="splash.css">
+  <script src="splash.js" defer></script>
+</head>
+<body>
+  <main class="splash" id="splash">
+    <div class="panel"></div>
+    <div class="sunrise"></div>
+    <div class="prompt-watermark" aria-hidden="true">&gt;</div>
+
+    <section class="brand" aria-label="ASUKA boot screen">
+      <div class="topline">
+        <strong>ASUKA / AGENT SYSTEM</strong>
+        <button class="skip-btn" id="skipButton" type="button" aria-label="Skip boot animation">
+          <span>SKIP</span><svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 4 10 8-10 8V4Z"/><path d="M19 5v14"/></svg>
+        </button>
+      </div>
+
+      <div class="brand-main">
+        <p class="kicker">ORIGINAL ANIME AGENT / ONLINE</p>
+        <h1 class="wordmark">ASUKA</h1>
+        <p class="tagline">BUILD THE NEXT MOVE.</p>
+      </div>
+
+      <div class="boot">
+        <div class="boot-head">
+          <span id="bootLabel" aria-live="polite"><span id="bootText">&gt; INITIALIZING NOVA CORE</span><span class="cursor" aria-hidden="true"></span></span>
+          <span id="bootPercent">0%</span>
+        </div>
+        <div class="meter" id="bootMeter" role="progressbar" aria-label="Boot progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
+        <div class="boot-foot">
+          <span id="crewLabel">NOVA / CORE</span>
+          <span class="crew" id="crew" role="group" aria-label="Choose an ASUKA bot">
+            <button type="button" class="crew-btn" data-bot="nova" title="NOVA / Core" aria-label="Select NOVA"><span style="background:#ff4f87"></span></button>
+            <button type="button" class="crew-btn" data-bot="byte" title="BYTE / Code" aria-label="Select BYTE"><span style="background:#3978f6"></span></button>
+            <button type="button" class="crew-btn" data-bot="lens" title="LENS / Research" aria-label="Select LENS"><span style="background:#8a5cff"></span></button>
+            <button type="button" class="crew-btn" data-bot="grid" title="GRID / Data" aria-label="Select GRID"><span style="background:#0d8e9f"></span></button>
+            <button type="button" class="crew-btn" data-bot="bloom" title="BLOOM / Design" aria-label="Select BLOOM"><span style="background:#f13bc2"></span></button>
+            <button type="button" class="crew-btn" data-bot="relay" title="RELAY / Ops" aria-label="Select RELAY"><span style="background:#11b981"></span></button>
+            <button type="button" class="crew-btn" data-bot="guard" title="GUARD / Security" aria-label="Select GUARD"><span style="background:#e33f57"></span></button>
+            <button type="button" class="crew-btn" data-bot="sprout" title="SPROUT / Growth" aria-label="Select SPROUT"><span style="background:#8bcf25"></span></button>
+            <button type="button" class="crew-btn" data-bot="luna" title="LUNA / Night" aria-label="Select LUNA"><span style="background:#4b4acf"></span></button>
+          </span>
+        </div>
+        <button class="enter-btn" id="enterButton" type="button" hidden>
+          <span>ENTER ASUKA</span><svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </button>
+      </div>
+    </section>
+
+    <section class="console" id="console" aria-hidden="true">
+      <header class="deck-head">
+        <span class="deck-brand">ASUKA / COMMAND DECK</span>
+        <div class="deck-actions">
+          <span class="online"><i></i>SYSTEM ONLINE</span>
+          <button class="back-btn" id="backButton" type="button"><svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg><span>BOOT</span></button>
+        </div>
+      </header>
+      <div class="deck-grid">
+        <section class="deck-agent">
+          <div>
+            <p class="deck-index" id="deckIndex">01 / CORE</p>
+            <h2>What are we<br>building?</h2>
+            <p class="deck-mounted"><svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/></svg><span id="deckAgentLabel" aria-live="polite">NOVA CORE IS MOUNTED</span></p>
+          </div>
+          <div class="deck-mascot">
+            <div class="think-orbit" aria-hidden="true"><i></i><i></i><i></i></div>
+            <div class="think-dots" aria-hidden="true"><i></i><i></i><i></i></div>
+            <img id="deckMascot" src="../bots/asuka-bot-nova-512.png" alt="Selected ASUKA bot">
+          </div>
+        </section>
+        <section class="deck-work">
+          <div class="crew-picker" id="crewPicker" role="group" aria-label="Select an ASUKA bot">
+            <button type="button" class="bot-choice is-active" data-bot="nova" aria-pressed="true"><img src="../bots/asuka-bot-nova-128.png" alt=""><span class="bot-name">NOVA</span><span class="bot-state">READY</span><span class="bot-progress"></span></button>
+            <button type="button" class="bot-choice" data-bot="byte" aria-pressed="false"><img src="../bots/asuka-bot-byte-128.png" alt=""><span class="bot-name">BYTE</span><span class="bot-state">READY</span><span class="bot-progress"></span></button>
+            <button type="button" class="bot-choice" data-bot="lens" aria-pressed="false"><img src="../bots/asuka-bot-lens-128.png" alt=""><span class="bot-name">LENS</span><span class="bot-state">READY</span><span class="bot-progress"></span></button>
+            <button type="button" class="bot-choice" data-bot="grid" aria-pressed="false"><img src="../bots/asuka-bot-grid-128.png" alt=""><span class="bot-name">GRID</span><span class="bot-state">READY</span><span class="bot-progress"></span></button>
+            <button type="button" class="bot-choice" data-bot="bloom" aria-pressed="false"><img src="../bots/asuka-bot-bloom-128.png" alt=""><span class="bot-name">BLOOM</span><span class="bot-state">READY</span><span class="bot-progress"></span></button>
+            <button type="button" class="bot-choice" data-bot="relay" aria-pressed="false"><img src="../bots/asuka-bot-relay-128.png" alt=""><span class="bot-name">RELAY</span><span class="bot-state">READY</span><span class="bot-progress"></span></button>
+            <button type="button" class="bot-choice" data-bot="guard" aria-pressed="false"><img src="../bots/asuka-bot-guard-128.png" alt=""><span class="bot-name">GUARD</span><span class="bot-state">READY</span><span class="bot-progress"></span></button>
+            <button type="button" class="bot-choice" data-bot="sprout" aria-pressed="false"><img src="../bots/asuka-bot-sprout-128.png" alt=""><span class="bot-name">SPROUT</span><span class="bot-state">READY</span><span class="bot-progress"></span></button>
+            <button type="button" class="bot-choice" data-bot="luna" aria-pressed="false"><img src="../bots/asuka-bot-luna-128.png" alt=""><span class="bot-name">LUNA</span><span class="bot-state">READY</span><span class="bot-progress"></span></button>
+          </div>
+          <form class="command-form" id="commandForm">
+            <label class="command-label" for="commandInput">COMMAND</label>
+            <div class="command-row">
+              <span class="prompt-mark">&gt;</span>
+              <input id="commandInput" name="command" type="text" autocomplete="off" placeholder="Ask NOVA to build something..." aria-label="Command for ASUKA">
+              <button class="send-btn" type="submit" aria-label="Send command"><svg class="lucide" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg></button>
+            </div>
+          </form>
+          <div class="terminal" id="terminal" aria-live="polite">
+            <p><span>&gt;</span> NOVA CORE ONLINE</p>
+            <p><span>&gt;</span> 9 AGENT CREW SYNCED</p>
+            <p class="hint" id="terminalHint">Awaiting command.</p>
+          </div>
+        </section>
+      </div>
+      <footer class="deck-foot"><span>ASUKA / 2026.11</span><span>BUILD THE NEXT MOVE.</span></footer>
+    </section>
+
+    <div class="mascot">
+      <div class="agent-tag">NOVA / CORE</div>
+      <img src="../bots/asuka-bot-nova-1024.png" alt="ASUKA Nova core avatar">
+    </div>
+    <div class="tag">ASUKA / 2026.11</div>
+
+    <svg class="grain" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <filter id="grain-noise">
+        <feTurbulence type="fractalNoise" baseFrequency="0.72" numOctaves="4" seed="7"/>
+        <feColorMatrix type="saturate" values="0"/>
+      </filter>
+      <rect width="100%" height="100%" filter="url(#grain-noise)"/>
+    </svg>
+  </main>
+</body>
+</html>

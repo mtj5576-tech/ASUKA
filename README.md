@@ -4,6 +4,12 @@ ASUKA 是一个本地优先的个人 Agent 工作台。它把任务规划、执�
 
 > **当前发布：`0.8.39`。** 仓库只维护当前源码、当前发布说明和推荐环境，不提交历史安装包、运行数据或密钥。`0.8.38` 便携版仅保留在本地 E 盘备份，不随本次仓库更新发布。详见 [CHANGELOG.md](CHANGELOG.md)。
 
+### 客户端界面
+
+![ASUKA 0.8.39 客户端指挥台](docs/assets/client-command-room.png)
+
+ASUKA 桌面客户端把房间、Bot 编队、执行状态、任务输入和审批边界放在同一个工作界面中。用户可以从左侧切换任务、Bot、Skill、工具与审批，在中央房间下达目标，并从顶部和任务卡片确认当前构建版本、执行者与交付状态。截图使用本地演示模型，不包含真实密钥或客户数据。
+
 ## 中文说明
 
 ### 当前可实现的功能
@@ -67,6 +73,12 @@ npm run dev
 ASUKA is a local-first personal agent desk for planning, executing, reviewing and delivering work with a visible audit trail. It supports five execution adapters: Native, Codex, Claude, DSH and the optional OpenMausBot compatibility layer. Native is the default and does not require embedding Codex or running OpenMausBot.
 
 > **Current release: `0.8.39`.** This repository keeps current source, current release notes and the recommended environment. Historical installers, runtime data and secrets are not committed. The `0.8.38` portable build remains in a local E-drive backup only. See [CHANGELOG.md](CHANGELOG.md).
+
+### Client interface
+
+![ASUKA 0.8.39 desktop command room](docs/assets/client-command-room.png)
+
+The ASUKA desktop client keeps the room, Bot crew, execution state, task composer and approval boundary in one operational surface. The left rail provides task, Bot, Skill, Tool and approval navigation; the center room is where users submit a brief; the header and task cards expose build identity, ownership and delivery state. The screenshot uses a local demo model and contains no real credentials or customer data.
 
 ### Implemented capabilities
 

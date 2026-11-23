@@ -14,6 +14,29 @@ The intended user flow is: select a Team Pack, provide the task inputs, let NOVA
 
 预期使用流程是：选择团队包、提供任务输入，由 NOVA 实例化或绑定所需 Bot，再通过现有的单主执行者与独立 Reviewer 流程完成任务。
 
+## Why Team Packs may help general models / 为什么团队包可能让通用模型更快接手
+
+A general-purpose model can reason across many domains, but a professional task is not only a reasoning problem. It also requires institutional context: ownership, sequencing, input semantics, tool contracts, review gates, deliverable norms and escalation rules. A Team Pack turns that context into an executable organization layer rather than leaving it buried in a long prompt.
+
+通用模型可以跨领域推理，但专业任务不只是推理题。它还需要制度性上下文：谁负责、先后顺序、输入语义、工具契约、复核门、交付规范和升级规则。团队包把这些上下文变成可执行的“组织层”，而不是把它们埋在一条很长的提示词里。
+
+The design thesis is that a well-scoped Team Pack can make a capable general model useful faster because it supplies:
+
+1. **A task contract**: accepted inputs, units, source-of-truth files, exclusions and stop conditions.
+2. **A role graph**: one primary worker, bounded specialists, reviewer and human escalation points.
+3. **Skill bindings**: only the Skills needed for this class of work, with progressive disclosure.
+4. **Tool grants**: explicit MCP/domain-tool access and risk tiers rather than broad ambient permissions.
+5. **An artifact contract**: expected files, naming, structure and validation.
+6. **Review gates**: blocking checks that can reject, degrade or request human input.
+7. **Evaluation samples**: reproducible cases that measure whether the pack actually improves handoff quality.
+8. **A maintenance boundary**: tool versions, licenses, compatibility, security and failure conditions.
+
+设计判断是：边界清楚的团队包可以让能力足够的通用模型更快变得有用，因为它提供了任务契约、角色拓扑、Skill 绑定、工具授权、交付契约、复核门、评测样例和维护边界。
+
+This is not a claim that the model itself becomes a licensed CAD/CNC engineer or designer. The pack packages workflow, tools and verification; professional accountability, licensed software, physical inspection and domain sign-off still remain human responsibilities where required.
+
+这不意味着模型本身成为持证 CAD/CNC 工程师或设计师。团队包封装的是流程、工具和验证；在需要时，专业责任、授权软件、实物检查和领域签字仍由人承担。
+
 ## Planned package shape / 计划中的包结构
 
 ```text

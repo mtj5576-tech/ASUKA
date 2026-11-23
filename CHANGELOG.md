@@ -10,6 +10,7 @@
 - 完善任务责任视图：Command、Mission Control 和任务详情统一显示构建版本、主执行者、贡献者与 Reviewer；修复决策角色到实际 Bot 的映射和“角色交付”占位问题。
 - 加固浏览器研究链路：任务级会话复用、页面与独立来源覆盖检查、失败证据排除和重复会话申请拦截。
 - 更新桌面发布：版本、启动脚本和 E 盘数据目录保持一致，并提供最新 Windows x64 便携包。
+- 新增中英双语的 Team Packs 路线图：团队包将角色拓扑、Skill 绑定、上下文契约、工具权限、交付物、审批门和验收样例封装为可安装、可版本化的专业团队工作单元，目标是让通用模型更快接手 CAD、CNC、设计等任务。
 
 ### English
 
@@ -19,6 +20,7 @@
 - Unified execution ownership across Command, Mission Control and task detail views, including build identity, primary worker, contributors and Reviewer state. Fixed decision-role-to-Bot mapping and placeholder owner labels.
 - Hardened browser research with task-scoped session reuse, page and independent-host evidence checks, failed-evidence exclusion and duplicate-session rejection.
 - Updated the desktop release version, launcher and E-drive profile handling, with a current Windows x64 portable build.
+- Added a bilingual Team Packs roadmap. A Team Pack packages role topology, Skill bindings, context contracts, tool grants, deliverables, approval gates and acceptance samples as an installable, versioned professional workflow unit, with the goal of helping general models take over CAD, CNC and design tasks faster.
 
 ### Recommended environment / 推荐环境
 

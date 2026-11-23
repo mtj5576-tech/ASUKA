@@ -21,6 +21,10 @@ ASUKA 是一个本地优先的个人 Agent 工作台。它把任务规划、执�
 
 ASUKA 后续计划支持 **Team Packs（团队包）**。团队包类似 Skill，但交付单位不是一个提示词或一个脚本，而是一支已经配置好角色、技能、工具权限、交付物和验收门的 Bot 团队。用户选择团队包后，NOVA 可以快速装载对应成员，让团队直接接手某类任务。
 
+设计判断：通用大模型通常具备较强的推理和生成能力，却缺少一项专业任务真正需要的上下文：谁负责什么、先做什么、哪些工具能碰、输入资料按什么口径解释、什么结果算完成、失败时向谁升级。团队包不是重新训练模型，也不是宣称模型突然具备专业资格，而是把这些“工作制度”封装成可安装、可版本化、可评估的协作结构。它把提示工程提升为团队设计，可能显著降低通用模型进入 CAD、CNC、设计等专业流程时的冷启动成本和提示漂移。
+
+一个成熟团队包应同时包含：清晰的任务入口与输入契约、角色拓扑与唯一主执行者、Skill 绑定、上下文分层、工具与权限清单、交付物模板、阻断审批门、可复现验收样例和人类升级路径。它还应记录适用版本、依赖工具、许可证、数据保密边界和已知失效条件。这样社区贡献的不仅是“更长的提示词”，而是一份可检查、可组合、可持续维护的专业工作单元。若这一模型成立，未来的通用模型可以像安装专业团队一样快速接手任务，而不必为每个垂直领域重新训练一个专用模型。
+
 计划中的首批方向包括 CAD 参数化建模与图纸检查、CNC 工艺与刀具路径复核、工业设计和产品设计评审。团队包会明确所需 Skill、MCP/CAD 工具、输入资料、审批点、输出格式和验收标准，并继续遵守单主执行、独立复核和最小权限原则。该能力目前是**路线图**，尚未作为已发布功能提供。详见 [docs/team-packs.md](docs/team-packs.md)。
 
 ### 一般用户如何开始
@@ -76,6 +80,10 @@ ASUKA is a local-first personal agent desk for planning, executing, reviewing an
 ### Team Packs roadmap
 
 Team Packs are planned as a higher-level counterpart to Skills. A Skill packages instructions and resources; a Team Pack packages a working Bot team with named roles, required Skills, tools and permissions, input contracts, deliverables, approval gates and acceptance criteria. Selecting a Team Pack should let NOVA assemble the team and take over a class of tasks quickly. Planned domains include CAD modeling and drawing review, CNC process and toolpath validation, and industrial/product design review. Team Packs are a **roadmap item**, not a shipped feature. See [docs/team-packs.md](docs/team-packs.md).
+
+Design thesis: general-purpose models are increasingly capable at reasoning and generation, but professional work also depends on organizational context: who owns which decision, what must happen first, which tools may be used, how input data should be interpreted, what counts as complete, and when to escalate to a human. A Team Pack does not retrain the model or claim that a general model is automatically professionally qualified. It packages the operating system of a team: role topology, context contracts, skill bindings, tool grants, artifact templates, blocking review gates, reproducible acceptance samples and escalation paths. This may reduce cold-start cost and prompt drift when a general model enters a specialized workflow.
+
+A mature Team Pack should be installable, versioned, inspectable and testable. It should also state tool versions, licenses, confidentiality boundaries and known failure conditions. The hypothesis is that this “organization layer” can become a faster path to professional task handoff than training a separate vertical model for every domain. If it works, a general model can take over a new class of work by loading a well-designed team, much like installing a professional operating unit. Community contributions should therefore be evaluated as workflow packages, not merely as longer prompts.
 
 ### Getting started
 

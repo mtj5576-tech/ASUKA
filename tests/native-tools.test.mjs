@@ -6,6 +6,7 @@ import { join } from "node:path";
 import { test } from "node:test";
 
 import { startAsukaServer } from "../server.mjs";
+import { NativeAdapter } from "../server/native/native-adapter.mjs";
 import { ToolManager } from "../server/tools/tool-manager.mjs";
 import { AsukaSettingsStore } from "../server/settings-store.mjs";
 
@@ -68,6 +69,7 @@ function fakeMcpClient(calls, names, controlStatusText = "") {
 
 async function providerMock(names) {
   let seenTools = [];
+  let contributorTools = [];
   let contributorCalls = 0;
   const server = http.createServer(async (request, response) => {
     if (request.method !== "POST" || !request.url?.endsWith("/chat/completions")) {
@@ -81,14 +83,22 @@ async function providerMock(names) {
     const system = body.messages?.[0]?.content || "";
     if (system.includes("independent reviewer")) return textReply(response, JSON.stringify({ passed: true, summary: "Meets gates.", issues: [] }));
     const allUserText = (body.messages || []).filter((message) => message.role === "user").map((message) => typeof message.content === "string" ? message.content : JSON.stringify(message.content)).join("\n");
+    const toolResults = body.messages?.filter((message) => message.role === "tool") || [];
     if (system.includes("assigned by NOVA to one team phase")) {
       contributorCalls += 1;
+      contributorTools = body.tools || [];
       if (allUserText.includes("empty-contributor-test")) return textReply(response, "");
-      return textReply(response, "specialist contribution for the market task");
+      return textReply(response, JSON.stringify({
+        status: "done",
+        summary: "specialist contribution for the market task",
+        artifacts: [{ type: "text", title: "Specialist evidence", content: "Contributor used its Agent Kernel thread." }],
+        evidence: toolResults.length ? ["contributor ControlStatus tool result"] : [],
+        issues: [],
+        nextAction: "",
+      }));
     }
     const firstUser = body.messages?.find((message) => message.role === "user")?.content || "";
     const prompt = typeof firstUser === "string" ? firstUser : JSON.stringify(firstUser);
-    const toolResults = body.messages?.filter((message) => message.role === "tool") || [];
     if (prompt.includes("empty-contributor-test")) return textReply(response, "lead delivered after optional contributor failure");
     if (prompt.includes("user-control-test")) {
       return toolCall(response, `call_status_${toolResults.length}`, names.ControlStatus, {});
@@ -114,7 +124,7 @@ async function providerMock(names) {
   return {
     origin: `http://127.0.0.1:${address.port}`,
     tools: () => seenTools,
-    stats: () => ({ contributorCalls }),
+    stats: () => ({ contributorCalls, contributorTools }),
     close: () => new Promise((resolve) => server.close(resolve)),
   };
 }
@@ -163,7 +173,13 @@ test("Native agent discovers MCP tools, executes safe calls, and gates Computer 
     await native(`/approvals/${marketGated.threadId}/respond`, { method: "POST", body: JSON.stringify({ requestId: marketApproval.requestId, behavior: "allow" }) });
     const marketClicked = await waitForTask(asuka.origin, marketGated.threadId, ["completed"]);
     assert.ok(marketClicked.messages.some((message) => message.text === "approved click complete"));
-    assert.equal(provider.stats().contributorCalls, contributorsBeforeMarket + 1);
+    assert.ok(provider.stats().contributorCalls >= contributorsBeforeMarket + 1);
+    assert.ok(marketClicked.job.agentKernel.threads.some((thread) => thread.toolCalls === 0));
+    assert.equal(provider.stats().contributorTools.length, 0);
+    const kernelThread = marketClicked.job.agentKernel.threads.find((thread) => thread.toolCalls === 0);
+    const kernelDetail = await native(`/agents/${kernelThread.botId}/kernel?taskId=${marketGated.threadId}`).then((response) => response.json());
+    assert.equal(kernelDetail.thread.status, "completed", JSON.stringify(kernelDetail.thread.events.slice(-8)));
+    assert.equal(kernelDetail.thread.messages.some((message) => message.role === "tool"), false);
 
     const optionalFailure = await native("/rooms/asuka-native-room/messages", {
       method: "POST",
@@ -237,6 +253,70 @@ test("Full Access exposes audited local commands and bypasses one-time tool appr
     assert.equal(approval, null);
     assert.ok(manager.listAudit().some((entry) => entry.serverId === "local-command" && entry.status === "ok"));
   } finally {
+    manager.close();
+    rmSync(dataDir, { recursive: true, force: true });
+  }
+});
+
+test("Native adapter reuses the task browser session instead of requesting another session", async () => {
+  const dataDir = mkdtempSync(join(tmpdir(), "asuka-browser-session-reuse-"));
+  let browserCalls = 0;
+  const browserCallNames = [];
+  const browserSkill = {
+    tools() {
+      return ["browser_skill_session", "browser_skill_open", "browser_skill_navigate", "browser_skill_sync"].map((name) => ({
+        name,
+        modelName: name,
+        description: name,
+        inputSchema: { type: "object", properties: {} },
+        risk: name === "browser_skill_session" ? "confirm" : "safe",
+        builtin: true,
+        serverId: "browser-skill",
+        serverName: "BrowserSkill CLI",
+      }));
+    },
+    riskFor(name) {
+      return name === "browser_skill_session" ? "confirm" : "safe";
+    },
+    async call(name) {
+      browserCalls += 1;
+      browserCallNames.push(name);
+      return { content: [{ type: "text", text: JSON.stringify({ name, session_id: "session-new" }) }] };
+    },
+  };
+  const manager = new ToolManager({
+    dataDir,
+    databasePath: join(dataDir, "tools.sqlite"),
+    windowsMcpCommand: join(dataDir, "missing.exe"),
+    browserSkill,
+  });
+  const adapter = new NativeAdapter({
+    dataDir,
+    databasePath: join(dataDir, "native.sqlite"),
+    toolManager: manager,
+  });
+  try {
+    const task = adapter.store.createTask({ title: "Browser session reuse", requestText: "research" });
+    adapter.store.appendModelMessage(task.id, {
+      role: "assistant",
+      content: "",
+      tool_calls: [
+        { id: "call-session-2", name: "browser_skill_session", arguments: JSON.stringify({ action: "start" }) },
+        { id: "call-open-2", name: "browser_skill_open", arguments: JSON.stringify({ url: "https://example.com" }) },
+      ],
+    });
+    const result = await adapter.executePendingToolCalls(task.id, task, new AbortController(), {
+      browserSessions: new Set(["session-existing"]),
+      browserEvidence: null,
+    });
+    assert.equal(result.handled, true);
+    assert.equal(result.approvalCreated, false);
+    assert.equal(browserCalls, 2);
+    assert.deepEqual(browserCallNames, ["browser_skill_navigate", "browser_skill_sync"]);
+    assert.equal(adapter.store.listApprovals(task.id).length, 0);
+    assert.ok(adapter.store.listModelMessages(task.id).some((message) => message.role === "tool" && message.content.includes("session-existing")));
+  } finally {
+    adapter.close();
     manager.close();
     rmSync(dataDir, { recursive: true, force: true });
   }

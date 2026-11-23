@@ -755,7 +755,7 @@ export default function App() {
   const [ombUrl, setOmbUrlState] = useState(readOmbUrl);
   const [adapter, setAdapterState] = useState(readAdapter);
   const [engineApiId, setEngineApiId] = useState(readEngineApi);
-  const [data, setData] = useState({ backend: null, health: null, bots: [], groups: [], instances: [], config: null, adapters: [], apiInstances: [] });
+  const [data, setData] = useState({ backend: null, health: null, build: null, bots: [], groups: [], instances: [], config: null, adapters: [], apiInstances: [] });
   const [loading, setLoading] = useState(true);
   const [bootReady, setBootReady] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -831,14 +831,16 @@ export default function App() {
     if (manual) setRefreshing(true);
     try {
       const includeOmb = adapter === "openmausbot";
-      const [snapshot, adapterData, ombSnapshot] = await Promise.all([
+      const [snapshot, adapterData, ombSnapshot, build] = await Promise.all([
         core("/snapshot"),
         core("/adapters"),
         includeOmb ? core("/snapshot", { adapter: "openmausbot" }).catch(() => null) : null,
+        core("/build").catch(() => null),
       ]);
       const next = {
         backend: snapshot.backend,
         health: snapshot.health,
+        build,
         bots: snapshot.bots || [],
         groups: snapshot.groups || [],
         instances: snapshot.instances || [],
@@ -1509,7 +1511,7 @@ export default function App() {
 
         <div className="sidebar-status">
           <StatusDot tone="ok" pulse />
-          <div><strong>{ADAPTER_LABELS[data.backend?.kind] || "Native"} Adapter {data.backend?.version || data.health?.version}</strong><span>{availableRuntimes.length} runtimes · {data.bots.length} bots</span></div>
+          <div><strong>ASUKA {data.build?.version || "版本未知"} · {ADAPTER_LABELS[data.backend?.kind] || "Native"} Adapter {data.backend?.version || data.health?.version}</strong><span>{data.build?.adapterBuild || "build 未识别"} · {availableRuntimes.length} runtimes · {data.bots.length} bots</span></div>
         </div>
       </aside>
 
@@ -1520,6 +1522,7 @@ export default function App() {
             <h1>{view === "command" ? activeRoom?.name || "ASUKA Command" : VIEW_ITEMS.find((item) => item.id === view)?.label}</h1>
           </div>
           <div className="topbar-actions">
+            <BuildFingerprint build={data.build} />
             <span className="connection-pill"><StatusDot tone="ok" /> {ADAPTER_LABELS[data.backend?.kind] || "Native"} / local</span>
             {data.backend?.kind === "openmausbot" && <a className="icon-button" href={ombUrl} target="_blank" rel="noreferrer" aria-label="打开 OpenMausBot"><ArrowUpRight size={17} /></a>}
             <button className="icon-button" onClick={() => refreshCore(true)} aria-label="刷新" disabled={refreshing}><RefreshCw size={17} className={refreshing ? "spin" : ""} /></button>
@@ -1738,11 +1741,45 @@ function buildWorkflow(job, messages, roomBots) {
     rationale: job.decision?.rationale || [],
     budget: plan.budget,
     roles: plan.roles || [],
+    ownership: job.executionOwnership || null,
   };
+}
+
+function ownershipGroupLabel(ownership) {
+  if (!ownership?.primaryWorker) return "单主执行流程";
+  const contributors = ownership.contributors?.length || 0;
+  const reviewer = ownership.reviewer?.status && ownership.reviewer.status !== "not-run"
+    ? ` · Reviewer ${ownership.reviewer.status}`
+    : "";
+  return `主执行者：${ownership.primaryWorker.name} · 有界贡献 ${contributors}${reviewer}`;
 }
 
 function workStateForBot(bot, workflow, job) {
   const crew = crewForBot(bot);
+  const ownership = workflow?.ownership;
+  if (ownership) {
+    if (bot.id === ownership.primaryWorker?.agentId) {
+      if (["failed", "cancelled", "interrupted"].includes(job?.state)) return "failed";
+      if (job?.state === "completed") return "done";
+      if (["needs-input", "waiting"].includes(job?.state)) return "waiting";
+      return ["running", "queued"].includes(job?.state) ? "working" : "ready";
+    }
+    const contribution = ownership.contributors?.find((item) => item.agentId === bot.id);
+    if (contribution) {
+      if (["done", "completed"].includes(contribution.status)) return "done";
+      if (["failed", "blocked"].includes(contribution.status)) return "failed";
+      if (["needs-input", "waiting-approval"].includes(contribution.status)) return "waiting";
+      return ["running", "working"].includes(contribution.status) ? "working" : "queued";
+    }
+    if (bot.id === ownership.reviewer?.agentId) {
+      if (["pass", "degraded"].includes(ownership.reviewer.status)) return "done";
+      if (ownership.reviewer.status === "reject") return "failed";
+      if (ownership.reviewer.status === "reviewing") return "working";
+      return job?.state === "completed" ? "done" : "queued";
+    }
+    if (bot.isOrchestrator) return ["completed", "failed", "cancelled"].includes(job?.state) ? "done" : "thinking";
+    return "ready";
+  }
   if (!workflow) {
     if (job?.state === "completed") return "done";
     if (job?.state === "running") return crew?.key === "nova" ? "thinking" : bot.busy ? "working" : "queued";
@@ -1774,16 +1811,22 @@ function CrewWorkRail({ roomBots, workflow, job }) {
   if (!roomBots.length) return null;
   return (
     <section className="crew-work-rail" aria-label="Agent work states">
-      <div className="crew-work-rail__label"><span>AGENT EXECUTION</span><small>{roomBots.filter((bot) => bot.busy).length || 0} active</small></div>
+      <div className="crew-work-rail__label"><span>执行归属</span><small>{workflow?.ownership ? "1 个主执行者" : `${roomBots.filter((bot) => bot.busy).length || 0} active`}</small></div>
       <div className="crew-work-rail__items">
         {roomBots.map((bot) => {
           const crew = crewForBot(bot);
           const state = workStateForBot(bot, workflow, job);
           const meta = WORK_STATE_META[state] || WORK_STATE_META.ready;
+          const ownership = workflow?.ownership;
+          const primary = ownership?.primaryWorker?.agentId === bot.id;
+          const contributor = ownership?.contributors?.find((item) => item.agentId === bot.id);
+          const reviewer = ownership?.reviewer?.agentId === bot.id;
+          const assignment = primary ? "唯一主执行者" : contributor ? "有界贡献" : reviewer ? "独立审核" : bot.isOrchestrator ? "协调" : "未分配";
+          const contributorStatus = contributor ? ` · ${contributor.status}` : "";
           return (
-            <article key={bot.id} className={`crew-work-card crew-work-card--${state}`} style={{ "--crew-accent": crew?.accent || "var(--accent)" }} title={bot.name}>
+            <article key={bot.id} className={`crew-work-card crew-work-card--${state} ${primary ? "is-primary-owner" : ""}`} style={{ "--crew-accent": crew?.accent || "var(--accent)" }} title={`${assignment} · ${bot.name}`}>
               <Avatar name={bot.name} color={bot.color} size="sm" busy={["thinking", "working"].includes(state)} />
-              <div className="crew-work-card__copy"><span>{crew ? `${crew.name} / ${crew.role}` : bot.name}</span><strong>{state === "working" && crew ? `${crew.action} · WORKING` : meta.label}</strong></div>
+              <div className="crew-work-card__copy"><span>{crew ? `${crew.name} / ${crew.role}` : bot.name} · {assignment}</span><strong>{contributor ? `${meta.label}${contributorStatus}` : state === "working" && crew ? `${crew.action} · ${meta.label}` : meta.label}</strong></div>
               <span className="crew-work-card__percent">{meta.progress}%</span>
               <i className="crew-work-card__meter" aria-hidden="true"><span style={{ width: `${meta.progress}%` }} /></i>
             </article>
@@ -1792,6 +1835,47 @@ function CrewWorkRail({ roomBots, workflow, job }) {
       </div>
     </section>
   );
+}
+
+function ExecutionOwnership({ ownership }) {
+  if (!ownership?.primaryWorker) return null;
+  const stateLabel = (value) => ({ queued: "排队中", running: "执行中", completed: "完成", failed: "失败", cancelled: "已停止", interrupted: "中断", done: "完成", blocked: "受阻", "needs-input": "需输入", reviewing: "审核中", pass: "通过", reject: "未通过", degraded: "降级通过", "not-run": "未开始" }[value] || value || "未开始");
+  return (
+    <section className="execution-ownership" aria-label="任务执行责任">
+      <div className="execution-ownership__primary"><strong>唯一主执行者</strong><span>{ownership.primaryWorker.name} · {ownership.primaryWorker.role}</span><StatusDot tone={statusTone(ownership.primaryWorker.status)} pulse={ownership.primaryWorker.status === "running"} /><small>{stateLabel(ownership.primaryWorker.status)}</small></div>
+      <div className="execution-ownership__support">
+        <span>有界贡献 · {ownership.contributors?.length || 0}</span>
+        {(ownership.contributors || []).map((item) => <small key={item.agentId} title={item.summary || item.role}>{item.name} · {stateLabel(item.status)}</small>)}
+        <span className="execution-ownership__review">Reviewer · {stateLabel(ownership.reviewer?.status)}</span>
+      </div>
+    </section>
+  );
+}
+
+function ownershipForRoom(room, job) {
+  if (job?.executionOwnership) return job.executionOwnership;
+  const plan = room?.teamPlan;
+  if (!plan?.primaryWorkerId) return null;
+  const primary = (room?.memberBots || []).find((bot) => bot.id === plan.primaryWorkerId);
+  if (!primary) return null;
+  return {
+    primaryWorker: {
+      agentId: primary.id,
+      name: primary.name,
+      role: primary.roleLabel || primary.title || "Primary Worker",
+      status: room.working ? "running" : room.threadId ? "queued" : "not-run",
+    },
+    contributors: (plan.assignments || [])
+      .filter((item) => item.agentId && item.agentId !== primary.id && item.agentId !== "asuka-native-planner" && item.agentId !== "asuka-native-reviewer")
+      .map((item) => ({
+        agentId: item.agentId,
+        name: item.name || item.agentId,
+        role: item.roleLabel || "specialist",
+        status: room.working ? "queued" : "not-run",
+        summary: "",
+      })),
+    reviewer: { agentId: "asuka-native-reviewer", name: "ASUKA Reviewer", status: room.threadId ? "queued" : "not-run", summary: "" },
+  };
 }
 
 function ThinkingStatus({ workflow, job }) {
@@ -1832,14 +1916,19 @@ function WorkflowMap({ workflow, open, onToggle, onSelect }) {
         <div className="mission-map__summary"><span>Scale {workflow.scale}</span><span>{workflow.taskType}</span><span>{workflow.roles.length} roles</span><span>{workflow.risks.length} risks</span><button className="text-button" onClick={onToggle}>{open ? "收起" : "展开作战图"}</button></div>
       </header>
       {open && <>
+        <div className="mission-ownership"><strong>唯一主执行者</strong><span>{workflow.ownership?.primaryWorker?.name || "待路由"} · {workflow.ownership?.primaryWorker?.role || "执行负责人"}</span><small>{ownershipGroupLabel(workflow.ownership)}</small></div>
         <div className="mission-brief"><span>决策简报</span><p>{workflow.rationale.slice(0, 2).join(" ")}</p></div>
+        <div className="ownership-roster" aria-label="唯一主执行者与有界贡献 Bot">
+          {roleExecutionRows(workflow).map((item) => <div key={item.id} className={item.primary ? "is-primary-owner" : ""}><span>{item.primary ? "唯一主执行者" : item.id === "evaluator" ? "独立审核" : "有界贡献"}</span><strong>{item.owner}</strong><small>{item.label} · {item.label.startsWith("有界贡献") ? "最多 1 次模型往返；无工具权限" : item.label}</small></div>)}
+        </div>
         <div className="mission-track">
           {workflow.groups.map((group, index) => {
             const Icon = group.icon;
+            const owners = roleExecutionRows(workflow).filter((item) => group.roles.some((role) => role.id === item.id));
             return <button key={group.id} className={`mission-node mission-node--${group.state}`} onClick={() => onSelect(group.id)}>
               <span className="mission-node__status">{group.state === "done" ? <CheckCircle2 size={15} /> : group.state === "active" || group.state === "waiting" ? <LoaderCircle className={group.state === "active" ? "spin" : ""} size={15} /> : <Icon size={15} />}</span>
               <span className="mission-node__copy"><small>0{index + 1}</small><strong>{group.title}</strong><em>{group.state}</em></span>
-              <span className="mission-node__roles">{group.roles.slice(0, 3).map((role) => <Avatar key={role.id} role={role.id} name={role.label} color={index === 0 ? "yellow" : index === 1 ? "teal" : index === 2 ? "red" : "chrome"} size="xs" />)}{group.roles.length > 3 && <b>+{group.roles.length - 3}</b>}</span>
+              <span className="mission-node__roles" title={owners.map((item) => `${item.owner}: ${item.label}`).join("; ")}>{owners.slice(0, 3).map((item) => <Avatar key={item.id} role={item.id} name={item.owner} color={item.primary ? "teal" : index === 2 ? "red" : "chrome"} size="xs" />)}{owners.length > 3 && <b>+{owners.length - 3}</b>}<small>{owners.length ? owners.map((item) => item.owner).join(" · ") : "未分配"}</small></span>
               {index < workflow.groups.length - 1 && <span className="mission-node__link" aria-hidden="true" />}
             </button>;
           })}
@@ -1858,8 +1947,12 @@ function WorkflowGroupDialog({ group, workflow, onClose }) {
         <header className="modal__header"><div><span className="eyebrow">BOT GROUP · {group.state.toUpperCase()}</span><h2 id="workflow-detail-title"><Icon size={20} /> {group.title}</h2><p>Decision Bot 分配给该组的角色、交付物和执行画面。</p></div><button className="icon-button" onClick={onClose} aria-label="关闭"><X size={18} /></button></header>
         <div className="workflow-detail__grid">
           <aside>
-            <div className="section-heading"><span>ASSIGNED BOTS</span><span>{group.roles.length}</span></div>
-            <div className="workflow-agent-grid">{group.roles.map((role, index) => <article key={role.id}><Avatar role={role.id} name={role.label} color={["yellow", "teal", "red", "blue", "chrome"][index % 5]} size="sm" /><div><strong>{crewForRole(role.id)?.name || role.label}</strong><span>{role.label} · {workflow.roles.find((item) => item.role === role.id)?.mode || "shared_agent"}</span></div><StatusDot tone={group.state === "done" ? "ok" : group.state === "active" ? "warn" : "idle"} pulse={group.state === "active"} /></article>)}</div>
+            <div className="section-heading"><span>执行责任（单主制）</span><span>{group.roles.length} 个角色</span></div>
+            <div className="workflow-agent-grid">{group.roles.map((role) => {
+              const row = roleExecutionRows(workflow).find((item) => item.id === role.id);
+              const primary = Boolean(row?.primary);
+              return <article key={role.id} className={primary ? "is-primary-owner" : "is-bounded-contribution"}><Avatar role={role.id} name={row?.owner || role.label} color={primary ? "teal" : role.id === "evaluator" ? "red" : "chrome"} size="sm" /><div><strong>{row?.owner || "未分配"}</strong><span>{row?.label || "角色交付"} · {role.label}</span></div><StatusDot tone={primary ? statusTone(workflow.ownership?.primaryWorker?.status) : row?.state === "done" || row?.state === "completed" ? "ok" : "idle"} pulse={Boolean(primary && workflow.ownership?.primaryWorker?.status === "running")} /></article>;
+            })}</div>
             <div className="section-heading workflow-detail__steps-title"><span>DELIVERABLES</span><span>{group.steps.length}</span></div>
             <div className="workflow-step-list">{group.steps.map((step) => <div key={step.id}><strong>{step.deliverable}</strong><span>{step.phase} · {ROLE_LABELS[step.ownerRole] || step.ownerRole}</span>{step.gateAfter && <em>Gate: {step.gateAfter}</em>}</div>)}</div>
             {group.gates.length > 0 && <div className="workflow-gates">{group.gates.map((gate) => <div key={gate.id}><ShieldCheck size={14} /><span><strong>{gate.id}</strong><small>{gate.criteria.join(" · ")}</small></span></div>)}</div>}
@@ -1874,6 +1967,31 @@ function WorkflowGroupDialog({ group, workflow, onClose }) {
   );
 }
 
+function BuildFingerprint({ build }) {
+  if (!build?.version) return null;
+  return <span className="build-fingerprint" title="当前连接的 ASUKA Core 构建身份">ASUKA {build.version} · {build.adapterBuild}</span>;
+}
+
+function roleExecutionRows(workflow) {
+  const ownership = workflow?.ownership;
+  const roles = workflow?.roles || [];
+  if (!ownership?.primaryWorker) return [];
+  return roles.map((role) => {
+    const roleId = role.id || role.role;
+    const assignment = ownership.contributors?.find((item) => item.decisionRole === roleId);
+    const isPrimary = ownership.primaryWorker.roleId === roleId;
+    const isReviewer = roleId === "evaluator";
+    return {
+      ...role,
+      id: roleId,
+      owner: isPrimary ? ownership.primaryWorker.name : assignment?.name || (isReviewer ? ownership.reviewer?.name : crewForRole(role.id)?.name || "角色交付"),
+      label: isPrimary ? "唯一主执行者" : assignment ? `有界贡献 · ${assignment.status}` : isReviewer ? `Reviewer · ${ownership.reviewer?.status || "queued"}` : "角色交付",
+      state: isPrimary ? ownership.primaryWorker.status : assignment?.status || (isReviewer ? ownership.reviewer?.status : "queued"),
+      primary: Boolean(isPrimary),
+    };
+  });
+}
+
 function CommandView({ room, roomBots, bots, messages, artifacts, job, activeJobState, targetId, setTargetId, draft, setDraft, mode, setMode, sendTask, sending, messageEndRef, onCreateTeam, seeding, instances, targetBot, openOmb, onOpenSettings, backend, adapter, adapters, apiInstances, engineApiId, onSwitchAdapter, onChooseEngine, showActivity, setShowActivity, onAddMembers }) {
   const [statusOpen, setStatusOpen] = useState(false);
   const [workflowOpen, setWorkflowOpen] = useState(false);
@@ -1881,6 +1999,8 @@ function CommandView({ room, roomBots, bots, messages, artifacts, job, activeJob
   const [selectedWorkflowGroupId, setSelectedWorkflowGroupId] = useState("");
   const composerInputRef = useRef(null);
   const workflow = useMemo(() => buildWorkflow(job, messages, roomBots), [job, messages, roomBots]);
+  const ownership = workflow?.ownership || ownershipForRoom({ ...room, memberBots: roomBots }, job);
+  const visibleWorkflow = workflow ? { ...workflow, ownership } : null;
   const selectedWorkflowGroup = workflow?.groups.find((group) => group.id === selectedWorkflowGroupId) || null;
   const guidanceMode = adapter === "native" && room?.threadId && activeJobState === "running";
 
@@ -1949,10 +2069,13 @@ function CommandView({ room, roomBots, bots, messages, artifacts, job, activeJob
         </div>
       </div>
 
+      {ownership && <ExecutionOwnership ownership={ownership} />}
+      {workflow?.roles?.length > 0 && <div className="command-role-owners"><strong>责任分配</strong>{roleExecutionRows({ ...workflow, ownership }).map((item) => <span key={item.id} className={item.primary ? "is-primary-owner" : ""}>{item.owner} · {item.label}</span>)}</div>}
+
       {!showArchify && statusOpen && (
         <div className="command-status-drawer">
-          <CrewWorkRail roomBots={roomBots} workflow={workflow} job={job} />
-          <WorkflowMap workflow={workflow} open={workflowOpen} onToggle={() => setWorkflowOpen((value) => !value)} onSelect={setSelectedWorkflowGroupId} />
+          <CrewWorkRail roomBots={roomBots} workflow={visibleWorkflow} job={job} />
+          <WorkflowMap workflow={visibleWorkflow} open={workflowOpen} onToggle={() => setWorkflowOpen((value) => !value)} onSelect={setSelectedWorkflowGroupId} />
         </div>
       )}
 
@@ -3003,6 +3126,7 @@ function TasksView({ bots, groups, onOpenRoom, onNotice, onRefresh }) {
                   <button className="button button--ghost button--compact" onClick={stopTask} disabled={Boolean(busyAction) || !working}><Ban size={14} /> 停止</button>
                 </div>
               </header>
+              <ExecutionOwnership ownership={job?.executionOwnership} />
               <div className="job-strip">
                 <span><StatusDot tone={statusTone(taskState)} pulse={working} /> {taskState}</span>
                 <span>queued {job?.counts?.queued || 0}</span>

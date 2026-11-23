@@ -388,7 +388,7 @@ export class ToolManager {
           if (!approvalId) throw new Error("This BrowserSkill tool requires one-time user approval");
           this.store.consumeApproval(approvalId, serverId, toolName, args);
         }
-        const output = await this.browserSkill.call(toolName, args);
+        const output = await this.browserSkill.call(toolName, args, { taskId });
         const durationMs = Date.now() - started;
         this.store.audit({ taskId, serverId, toolName, risk, args, status: "ok", resultSummary: summarizeResult(output), durationMs });
         return { result: output, risk, durationMs };

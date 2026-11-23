@@ -6,6 +6,12 @@ import { startAsukaServer } from "../server.mjs";
 import { electronSecretStore } from "../server/native/secret-store.mjs";
 
 const currentDir = dirname(fileURLToPath(import.meta.url));
+process.env.ASUKA_DESKTOP_VERSION = app.getVersion();
+const userDataOverride = process.env.ASUKA_USER_DATA_DIR?.trim();
+if (userDataOverride) {
+  mkdirSync(userDataOverride, { recursive: true });
+  app.setPath("userData", userDataOverride);
+}
 const lock = app.requestSingleInstanceLock();
 let mainWindow = null;
 let desktopServer = null;

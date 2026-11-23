@@ -347,6 +347,9 @@ a { color: inherit; text-decoration: none; }
 .task-detail { min-width: 0; display: flex; flex-direction: column; }.task-detail__header { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; padding: 16px 18px; border-bottom: 1px solid var(--line); }.task-detail__header h3 { margin: 5px 0 3px; font-family: Georgia, serif; font-size: 21px; font-weight: 500; }.task-detail__header p { margin: 0; color: var(--muted); font-family: ui-monospace, monospace; font-size: 7px; }.task-detail__actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 5px; }
 .task-detail__title { min-width: 0; }.task-rename-form { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-top: 6px; }.task-rename-form input { min-width: min(320px, 42vw); padding: 8px 10px; border: 1px solid var(--line); border-radius: 5px; outline: 0; background: #f5f2ed; color: var(--ink); font-family: Georgia, serif; font-size: 18px; }.task-rename-form input:focus { border-color: var(--teal); background: var(--paper-strong); }
 .job-strip { display: flex; flex-wrap: wrap; gap: 12px; padding: 9px 18px; border-bottom: 1px solid var(--line); background: #f5f2ed; color: var(--muted); font-family: ui-monospace, monospace; font-size: 8px; }.job-strip span { display: inline-flex; align-items: center; gap: 5px; }
+.build-fingerprint { color: var(--muted); font-family: ui-monospace, monospace; font-size: 8px; white-space: nowrap; }
+.command-role-owners { display: flex; align-items: center; flex-wrap: wrap; gap: 5px; padding: 6px 22px; border-bottom: 1px solid var(--line); background: #f7f5f0; color: var(--muted); font-size: 8px; }.command-role-owners strong { margin-right: 3px; color: var(--ink); }.command-role-owners span { padding: 3px 6px; border: 1px solid #dfd9cf; border-radius: 4px; background: #fffdf9; }.command-role-owners span.is-primary-owner { border-color: #8eb3ac; background: #edf5f2; color: #205f59; font-weight: 700; }
+.ownership-roster { display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: 6px; margin: 0 22px 9px; }.ownership-roster > div { min-width: 0; display: grid; gap: 3px; padding: 7px 9px; border: 1px solid #ded8ce; border-radius: 5px; background: #fffdf9; }.ownership-roster > div.is-primary-owner { border-color: #80aaa3; background: #edf5f2; }.ownership-roster span, .ownership-roster small { color: var(--muted); font-size: 8px; }.ownership-roster strong { overflow: hidden; color: var(--ink); font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }.ownership-roster small { overflow-wrap: anywhere; }
 .task-settings-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 9px 18px; border-bottom: 1px solid var(--line); background: var(--paper-strong); }
 .task-settings-row label { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 8px; }
 .task-settings-row input { width: min(220px, 38vw); padding: 7px 9px; border: 1px solid var(--line); border-radius: 5px; outline: 0; background: #f5f2ed; color: var(--ink); font-size: 9px; }
@@ -668,6 +671,10 @@ a { color: inherit; text-decoration: none; }
   .mission-map > header { align-items: flex-start; flex-direction: column; padding: 10px 16px; }
   .mission-map__summary { justify-content: flex-start; }
   .mission-brief { grid-template-columns: 1fr; margin-inline: 16px; }
+  .ownership-roster { grid-template-columns: repeat(auto-fit, minmax(128px, 1fr)); margin-inline: 16px; }
+  .command-role-owners { padding-inline: 16px; }
+  .execution-ownership { grid-template-columns: 1fr; padding-inline: 12px; }
+  .execution-ownership__review { margin-left: 0; }
   .mission-track { grid-template-columns: 1fr; padding-inline: 16px; }
   .workflow-execution-log { max-height: 46vh; }
 }

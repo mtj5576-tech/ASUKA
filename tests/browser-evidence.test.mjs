@@ -80,3 +80,24 @@ test("browser evidence requires at least two independent official hosts", () => 
   assert.equal(browserEvidenceComplete(budget), true);
   assert.equal(browserEvidenceSummary(budget).syncedHosts, 2);
 });
+
+test("research budgets require broader page and host coverage", () => {
+  const budget = createBrowserEvidenceBudget({ requiredPages: 8, requiredHosts: 3 });
+  for (const url of [
+    "https://www.knbs.or.ke/",
+    "https://www.knbs.or.ke/reports/",
+    "https://www.knbs.or.ke/about/",
+    "https://www.kra.go.ke/",
+    "https://www.kra.go.ke/tariff/",
+    "https://www.kra.go.ke/customs/",
+    "https://www.crownpaints.co.ke/",
+  ]) {
+    recordBrowserEvidence(budget, { toolName: "browser_skill_navigate", args: { url } });
+    recordBrowserEvidence(budget, { toolName: "browser_skill_sync", args: {} });
+  }
+  assert.equal(browserEvidenceComplete(budget), false);
+  recordBrowserEvidence(budget, { toolName: "browser_skill_navigate", args: { url: "https://www.crownpaints.co.ke/products/" } });
+  recordBrowserEvidence(budget, { toolName: "browser_skill_sync", args: {} });
+  assert.equal(browserEvidenceComplete(budget), true);
+  assert.deepEqual(browserEvidenceSummary(budget), { requiredPages: 8, requiredHosts: 3, navigatedPages: 8, syncedPages: 8, syncedHosts: 3, rejectedPages: 0, syncs: 8 });
+});

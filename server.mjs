@@ -130,6 +130,7 @@ function proxyRequest(origin, request, response) {
 
 export async function startAsukaServer(options = {}) {
   const root = resolve(options.root || defaultRoot);
+  const appVersion = options.appVersion || process.env.ASUKA_DESKTOP_VERSION || process.env.npm_package_version || "0.0.0-dev";
   const initialOmbOrigin = checkedOmbOrigin(options.ombUrl || process.env.OMB_URL || "http://127.0.0.1:8799");
   const requestedPort = Number(options.port ?? process.env.PORT ?? 4173);
   const host = options.host || process.env.HOST || "127.0.0.1";
@@ -171,6 +172,10 @@ export async function startAsukaServer(options = {}) {
 
   const server = http.createServer(async (request, response) => {
     const url = new URL(request.url || "/", `http://${request.headers.host || host}`);
+    if (url.pathname === "/__asuka/core/build" && request.method === "GET") {
+      json(response, 200, { version: appVersion, adapterBuild: "native-kernel-v1", source: "asuka" });
+      return;
+    }
     if (await handleCoreRequest({ request, response, url, nativeAdapter, adapterRegistry, toolManager, settingsStore, roomVisualizer, resolveOrigin: (incoming) => requestedOmbOrigin(incoming, initialOmbOrigin) })) return;
     if (url.pathname === "/__asuka/omb-launch" && request.method === "GET") {
       json(response, 200, { candidates: ombLaunchCandidates().map((item) => ({ kind: item.kind, path: item.path })) });

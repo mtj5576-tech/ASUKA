@@ -39,6 +39,8 @@ export class BrowserSkillTools {
     this.prefixArgs = Array.isArray(options.prefixArgs) ? options.prefixArgs.map(String) : [];
     this.timeoutMs = Math.max(5_000, Math.min(Number(options.timeoutMs) || 90_000, 180_000));
     this.contexts = new Map();
+    this.observations = new Map();
+    this.scopes = new Map();
   }
 
   tools() {
@@ -68,6 +70,25 @@ export class BrowserSkillTools {
           additionalProperties: false,
         },
         risk: "confirm",
+        builtin: true,
+        serverId: "browser-skill",
+        serverName: "BrowserSkill CLI",
+      },
+      {
+        name: "browser_skill_open",
+        modelName: "browser_skill_open",
+        description: "BrowserSkill / bsk: start or reuse one task-scoped background Agent Window, navigate to an http(s) URL, and return a settled page observation. Prefer this for read-only research. Reuse the scope instead of starting another session.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            url: { type: "string" },
+            browser: { type: "string", description: "Optional bsk browser id or label." },
+            max_tokens: { type: "number", minimum: 1000, maximum: 20000 },
+          },
+          required: ["url"],
+          additionalProperties: false,
+        },
+        risk: "safe",
         builtin: true,
         serverId: "browser-skill",
         serverName: "BrowserSkill CLI",
@@ -140,11 +161,13 @@ export class BrowserSkillTools {
     if (selectedTab) command.push("--tab-id", selectedTab);
     const output = await this.run(command);
     const context = /"context_id"\s*:\s*"([^"]+)"/.exec(output)?.[1] || "";
+    const observation = /"observation_id"\s*:\s*"([^"]+)"/.exec(output)?.[1] || "";
     if (context) this.contexts.set(session, context);
-    return { output, context };
+    if (observation) this.observations.set(session, observation);
+    return { output, context, observation };
   }
 
-  async call(name, args = {}) {
+  async call(name, args = {}, context = {}) {
     if (name === "browser_skill_status") {
       const status = await this.run(["status", "--json"]);
       const browsers = await this.run(["browsers", "--json"]);
@@ -161,9 +184,49 @@ export class BrowserSkillTools {
         const session = validateSession(args.session_id);
         const output = await this.run(["session", "stop", session]);
         this.contexts.delete(session);
+        this.observations.delete(session);
+        for (const [scope, meta] of this.scopes.entries()) if (meta.session === session) this.scopes.delete(scope);
         return result(output);
       }
       throw new Error("BrowserSkill session action must be start or stop");
+    }
+    if (name === "browser_skill_open") {
+      const parsed = new URL(String(args.url || "").trim());
+      if (!["http:", "https:"].includes(parsed.protocol)) throw new Error("BrowserSkill URL must use http or https");
+      const scope = String(context.taskId || "").trim().replace(/[^A-Za-z0-9_-]+/g, "-").slice(0, 120);
+      if (!scope) throw new Error("BrowserSkill task scope is required");
+      const scopeName = `asuka-${scope}`;
+      const previous = this.scopes.get(scopeName) || null;
+      const commandFor = (meta = null) => {
+        const command = ["open", parsed.toString(), "--scope", scopeName, "--no-focus", "--json", "--max-tokens", String(Math.max(1_000, Math.min(Number(args.max_tokens) || 8_000, 20_000)))];
+        if (meta?.session) command.push("--session", meta.session);
+        if (meta?.context) command.push("--context", meta.context);
+        if (meta?.observation) command.push("--observation", meta.observation);
+        return command;
+      };
+      const browser = String(args.browser || "").trim();
+      const execute = async (meta = null) => {
+        const command = commandFor(meta);
+        if (browser) command.push("--browser", browser);
+        const output = await this.run(command);
+        const session = /"session_id"\s*:\s*"([A-Za-z0-9_-]+)"/.exec(output)?.[1] || meta?.session || "";
+        const context = /"context_id"\s*:\s*"([^"]+)"/.exec(output)?.[1] || "";
+        const observation = /"observation_id"\s*:\s*"([^"]+)"/.exec(output)?.[1] || "";
+        if (session && context) this.contexts.set(session, context);
+        if (session && observation) this.observations.set(session, observation);
+        if (session) this.scopes.set(scopeName, { session, context, observation });
+        return output;
+      };
+      try {
+        return result(await execute(previous));
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        if (!previous?.session || !/(observation|context|shared page control|cooperation_sync_required)/i.test(message)) throw error;
+        await this.run(["cooperate", "wait", "--session", previous.session]).catch(() => "");
+        const refreshed = await this.syncSession(previous.session);
+        const output = await execute({ session: previous.session, context: refreshed.context, observation: refreshed.observation });
+        return result(output);
+      }
     }
     if (name === "browser_skill_navigate") {
       const session = validateSession(args.session_id);
@@ -172,11 +235,14 @@ export class BrowserSkillTools {
       const navigate = (context = "") => {
         const command = ["navigate", parsed.toString(), "--session", session];
         if (context) command.push("--context", context);
+        const observation = this.observations.get(session) || "";
+        if (observation) command.push("--observation", observation);
         return this.run(command);
       };
       try {
         const output = await navigate(this.contexts.get(session) || "");
         this.contexts.delete(session);
+        this.observations.delete(session);
         return result(output);
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
@@ -186,6 +252,7 @@ export class BrowserSkillTools {
         if (!refreshed.context) throw error;
         const output = await navigate(refreshed.context);
         this.contexts.delete(session);
+        this.observations.delete(session);
         return result(output);
       }
     }

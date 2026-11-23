@@ -10,6 +10,7 @@ import { startAsukaServer } from "../server.mjs";
 import { NativeAdapter } from "../server/native/native-adapter.mjs";
 import { createFileSecretStore } from "../server/native/secret-store.mjs";
 import { NativeStore } from "../server/native/store.mjs";
+import { readFileSync } from "node:fs";
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -195,6 +196,13 @@ test("native adapter migrates the existing DeepSeek provider into per-bot API pr
   }
 });
 
+test("execution ownership maps decision roles to primary, contributor and reviewer identities", () => {
+  const source = readFileSync(new URL("../src/App.jsx", import.meta.url), "utf8");
+  assert.match(source, /const roleId = role\.id \|\| role\.role/);
+  assert.match(source, /item\.decisionRole === roleId/);
+  assert.match(source, /ownership\.primaryWorker\.roleId === roleId/);
+});
+
 test("native adapter runs, streams, stops, retries, approves, survives restart and never returns the API key", async () => {
   const dataDir = mkdtempSync(join(tmpdir(), "asuka-native-"));
   const databasePath = join(dataDir, "native.sqlite");
@@ -230,6 +238,8 @@ test("native adapter runs, streams, stops, retries, approves, survives restart a
     assert.equal(nova.isOrchestrator, true);
     assert.ok(["ASUKA LENS", "ASUKA GRID", "ASUKA BLOOM", "ASUKA RELAY", "ASUKA SPROUT", "ASUKA LUNA"].every((name) => snapshot.bots.some((bot) => bot.name === name)));
     assert.ok(snapshot.bots.every((bot) => bot.roleLabel && bot.deliverable && bot.missingRisk && bot.skillSummary?.total >= 0));
+    assert.ok(snapshot.bots.every((bot) => bot.agentKernel?.enabled === true));
+    assert.ok(snapshot.bots.every((bot) => bot.agentKernel.capabilities.includes("persistent_thread")));
     assert.equal(snapshot.groups[0].name, "ASUKA Command");
     assert.equal(snapshot.instances[0].snapshot.state, "available");
     assert.equal(snapshot.config.nativeProviders.length, 1);
@@ -263,6 +273,15 @@ test("native adapter runs, streams, stops, retries, approves, survives restart a
     }).then((response) => response.json());
     const completed = await waitForTask(asuka.origin, created.threadId, ["completed"]);
     assert.equal(completed.job.decision.plan.scale, "S");
+    assert.equal(completed.job.executionOwnership.primaryWorker.agentId, "asuka-native-night");
+    assert.equal(completed.ownership.primaryWorker.agentId, "asuka-native-night");
+    assert.equal(completed.ownership.primaryWorker.roleId, "software_engineer");
+    assert.equal(completed.ownership.contributors[0].decisionRole, "product_owner");
+    assert.equal(completed.job.agentKernel.enabled, true);
+    assert.ok(completed.job.agentKernel.threads.some((thread) => thread.botId === "asuka-native-growth" && thread.status === "completed"));
+    assert.ok(completed.job.executionOwnership.contributors.every((item) => item.agentId !== completed.job.executionOwnership.primaryWorker.agentId));
+    assert.ok(completed.job.executionOwnership.contributors.every((item) => item.summary.length <= 4_000));
+    assert.equal(completed.job.executionOwnership.reviewer.status, "pass");
     assert.equal(completed.job.stage, "ended");
     assert.equal(completed.job.mandate.adapter, "native");
     assert.equal(completed.job.report.state, "ready");

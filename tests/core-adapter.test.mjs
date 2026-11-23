@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import http from "node:http";
-import { mkdtempSync, rmSync } from "node:fs";
+import { mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
@@ -10,6 +10,15 @@ function json(response, status, body) {
   response.writeHead(status, { "content-type": "application/json" });
   response.end(JSON.stringify(body));
 }
+
+test("portable launcher and package use the same version and preserve the E-drive profile", () => {
+  const packageInfo = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8"));
+  const launcher = readFileSync(new URL("../Start-ASUKA.cmd", import.meta.url), "utf8");
+  assert.equal(packageInfo.version, "0.8.39");
+  assert.match(launcher, /ASUKA-0\.8\.39-portable\.exe/i);
+  assert.match(launcher, /ASUKA_DATA_DIR=E:\\ASUKA\\data\\user-data/i);
+  assert.match(launcher, /ASUKA_USER_DATA_DIR=E:\\ASUKA\\data\\user-data/i);
+});
 
 test("ASUKA Core routes snapshot, task and agent operations through its adapter", async () => {
   const dataDir = mkdtempSync(join(tmpdir(), "asuka-core-"));
@@ -30,9 +39,12 @@ test("ASUKA Core routes snapshot, task and agent operations through its adapter"
   await new Promise((resolve) => omb.listen(0, "127.0.0.1", resolve));
   const address = omb.address();
   const ombOrigin = `http://127.0.0.1:${address.port}`;
-  const asuka = await startAsukaServer({ port: 0, ombUrl: ombOrigin, dataDir });
+  const asuka = await startAsukaServer({ port: 0, ombUrl: ombOrigin, dataDir, appVersion: "test-asuka-version" });
   const headers = { "x-asuka-adapter": "openmausbot" };
   try {
+    const build = await fetch(`${asuka.origin}/__asuka/core/build`).then((response) => response.json());
+    assert.equal(build.version, "test-asuka-version");
+    assert.equal(build.adapterBuild, "native-kernel-v1");
     const snapshot = await fetch(`${asuka.origin}/__asuka/core/snapshot`, { headers }).then((response) => response.json());
     assert.equal(snapshot.backend.kind, "openmausbot");
     assert.equal(snapshot.backend.authOwner, "asuka");

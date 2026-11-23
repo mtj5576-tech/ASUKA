@@ -259,6 +259,19 @@ export async function handleCoreRequest({ request, response, url, resolveOrigin,
       send(response, 200, await adapter.removeSkill(match[1], match[2]));
       return true;
     }
+    match = /^\/__asuka\/core\/agents\/([\w-]+)\/kernel$/.exec(url.pathname);
+    if (match && request.method === "GET") {
+      if (typeof adapter.getAgentKernelThread !== "function") {
+        send(response, 404, { error: "Agent Kernel is not supported by this adapter" });
+      } else {
+        send(response, 200, adapter.getAgentKernelThread(
+          match[1],
+          url.searchParams.get("taskId") || "",
+          url.searchParams.get("purpose") || "contributor",
+        ));
+      }
+      return true;
+    }
     if (request.method === "POST" && url.pathname === "/__asuka/core/providers/test") {
       send(response, 200, await adapter.testProvider(await readJson(request)));
       return true;

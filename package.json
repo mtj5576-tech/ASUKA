@@ -1,7 +1,7 @@
 {
   "name": "asuka-personal",
   "private": true,
-  "version": "0.8.38",
+  "version": "0.8.39",
   "description": "Local-first personal agent command desk with Native, Codex, Claude, DSH and optional OpenMausBot adapters.",
   "author": "ASUKA",
   "type": "module",
@@ -35,7 +35,7 @@
     ],
     "npmRebuild": false,
     "directories": {
-      "output": "release",
+      "output": "E:/ASUKA/release",
       "buildResources": "build"
     },
     "files": [
@@ -47,6 +47,7 @@
       "server/adapters/**/*",
       "server/core/**/*",
       "server/fabric/**/*",
+      "server/kernel/**/*",
       "server/native/**/*",
       "server/tools/**/*",
       "skills/**/*",

@@ -14,7 +14,8 @@ function writeFakeBsk(root) {
     "if (args[0] === 'status') console.log(JSON.stringify({ daemon: 'ready' }));",
     "else if (args[0] === 'browsers') console.log(JSON.stringify([{ instance_id: 'browser-1', connected: true }]));",
     "else if (args[0] === 'session' && args[1] === 'start') console.log(JSON.stringify({ session_id: 'session-1' }));",
-    "else if (args[0] === 'cooperate') console.log(JSON.stringify({ context_id: 'context-1', args }));",
+    "else if (args[0] === 'open') console.log(JSON.stringify({ session_id: 'session-open', context_id: 'context-open', observation_id: 'observation-open', args }));",
+    "else if (args[0] === 'cooperate') console.log(JSON.stringify({ context_id: 'context-1', observation_id: 'observation-1', args }));",
     "else console.log(JSON.stringify({ args }));",
   ].join("\n"), "utf8");
   return script;
@@ -28,6 +29,7 @@ test("BrowserSkill built-in tools execute only scoped bsk commands", async () =>
     assert.deepEqual(browser.tools().map((tool) => tool.name), [
       "browser_skill_status",
       "browser_skill_session",
+      "browser_skill_open",
       "browser_skill_navigate",
       "browser_skill_sync",
     ]);
@@ -36,10 +38,18 @@ test("BrowserSkill built-in tools execute only scoped bsk commands", async () =>
     assert.match(status.content[0].text, /browser-1/);
     const started = await browser.call("browser_skill_session", { action: "start" });
     assert.match(started.content[0].text, /session-1/);
+    const opened = await browser.call("browser_skill_open", { url: "https://example.com", max_tokens: 5000 }, { taskId: "task-42" });
+    assert.match(opened.content[0].text, /session-open/);
+    assert.match(opened.content[0].text, /asuka-task-42/);
+    assert.match(opened.content[0].text, /--no-focus/);
+    const reopened = await browser.call("browser_skill_open", { url: "https://example.org" }, { taskId: "task-42" });
+    assert.match(reopened.content[0].text, /--observation/);
+    assert.match(reopened.content[0].text, /observation-open/);
     const synced = await browser.call("browser_skill_sync", { session_id: "session-1" });
     assert.match(synced.content[0].text, /cooperate/);
     const navigated = await browser.call("browser_skill_navigate", { session_id: "session-1", url: "https://example.com" });
     assert.match(navigated.content[0].text, /--context/);
+    assert.match(navigated.content[0].text, /--observation/);
     await assert.rejects(browser.call("browser_skill_navigate", { session_id: "session-1", url: "file:///secret" }), /http or https/);
   } finally {
     rmSync(dataDir, { recursive: true, force: true });
@@ -59,6 +69,8 @@ test("ToolManager exposes BrowserSkill tools and keeps state-changing commands b
   try {
     const catalog = await manager.listModelTools();
     assert.ok(catalog.tools.some((tool) => tool.name === "browser_skill_status"));
+    assert.ok(catalog.tools.some((tool) => tool.name === "browser_skill_open"));
+    assert.equal(manager.riskForTool({ serverId: "browser-skill", name: "browser_skill_open" }, { url: "https://example.com" }), "safe");
     assert.equal(manager.riskForTool({ serverId: "browser-skill", name: "browser_skill_navigate" }, { session_id: "session-1", url: "https://example.com" }), "safe");
     assert.equal(manager.riskForTool({ serverId: "browser-skill", name: "browser_skill_session" }, { action: "start" }), "confirm");
     assert.equal(manager.riskForTool({ serverId: "browser-skill", name: "browser_skill_session" }, { action: "stop", session_id: "session-1" }), "safe");

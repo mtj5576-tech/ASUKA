@@ -54,8 +54,8 @@ test("native global skills are enabled for every bot and load explicitly named b
       title: "Browser skill task",
     }, adapter.decisionFor("browser-skill-task", "Use browser-skill to open the page and read it."));
     assert.match(browserSystem, /BROWSER FULL INSTRUCTIONS/);
-    assert.match(browserSystem, /BrowserSkill CLI tools/i);
-    assert.match(browserSystem, /session_id/i);
+    assert.match(browserSystem, /browser_skill_open/i);
+    assert.match(browserSystem, /do not start a second session/i);
 
     const documentSystem = adapter.executorSystem({
       id: "document-skill-task",
